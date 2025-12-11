@@ -5,25 +5,18 @@
   "main": "src/server.ts",
   "type": "module",
   "scripts": {
-    "dev": "ts-node-dev --respawn --transpile-only --exit-child -r tsconfig-paths/register src/server.ts"
+    "dev": "node --loader ts-node/esm --enable-source-maps src/server.ts",
+    "dev:watch": "nodemon --exec node --loader ts-node/esm --enable-source-maps src/server.ts",
+    "build": "tsc",
+    "start": "node dist/server.js"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/DimaChekashov/fs-blog-api.git"
-  },
-  "keywords": [
-    "express",
-    "postgresql"
-  ],
   "author": "DimaChekashov",
   "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/DimaChekashov/fs-blog-api/issues"
-  },
-  "homepage": "https://github.com/DimaChekashov/fs-blog-api#readme",
   "dependencies": {
+    "dotenv": "^17.2.3",
     "express": "^5.2.1",
-    "ts-node-dev": "^2.0.0"
+    "nodemon": "^3.1.11",
+    "ts-node": "^10.9.2"
   },
   "devDependencies": {
     "@types/express": "^5.0.6",
