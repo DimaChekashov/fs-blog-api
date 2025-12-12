@@ -19,6 +19,8 @@
     // Stricter Typechecking Options
     "noUncheckedIndexedAccess": true,
     "exactOptionalPropertyTypes": true,
+    "allowImportingTsExtensions": true,
+    "noEmit": true,
     // Recommended Options
     "strict": true,
     "verbatimModuleSyntax": true,

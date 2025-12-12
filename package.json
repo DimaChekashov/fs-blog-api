@@ -8,7 +8,11 @@
     "dev": "node --loader ts-node/esm --enable-source-maps src/server.ts",
     "dev:watch": "nodemon --exec node --loader ts-node/esm --enable-source-maps src/server.ts",
     "build": "tsc",
-    "start": "node dist/server.js"
+    "start": "node dist/server.js",
+    "migrate": "npx tsx src/database/migrations/run-migrations.ts",
+    "db:up": "docker-compose up -d postgres",
+    "db:down": "docker-compose down",
+    "db:logs": "docker-compose logs -f postgres"
   },
   "author": "DimaChekashov",
   "license": "ISC",
@@ -16,11 +20,13 @@
     "dotenv": "^17.2.3",
     "express": "^5.2.1",
     "nodemon": "^3.1.11",
+    "pg": "^8.16.3",
     "ts-node": "^10.9.2"
   },
   "devDependencies": {
     "@types/express": "^5.0.6",
     "@types/node": "^25.0.0",
+    "@types/pg": "^8.16.0",
     "tsconfig-paths": "^4.2.0",
     "typescript": "^5.9.3"
   }

@@ -1,3 +1,4 @@
+import { PostRepository } from "./repositories/post.repository.js";
 import dotenv from "dotenv";
 import express, { type Request, type Response } from "express";
 
@@ -14,25 +15,23 @@ const posts = [
   },
 ];
 
-app.get("/posts", (req: Request, res: Response) => {
+const postRepo = new PostRepository();
+
+app.get("/posts", async (req: Request, res: Response) => {
+  const posts = await postRepo.findAll();
   return res.json({ posts });
 });
 
-app.post("/posts", (req: Request, res: Response) => {
+app.post("/posts", async (req: Request, res: Response) => {
   const { title } = req.body;
 
   if (!title) {
     return res.status(400).json({ error: "Send title field!" });
   }
 
-  const newPost = {
-    id: posts.length + 1,
-    title,
-  };
+  const post = await postRepo.create({ title });
 
-  posts.push(newPost);
-
-  return res.status(201).json({ message: "Post created!", post: newPost });
+  return res.status(201).json({ message: "Post created!", post });
 });
 
 app.put("/posts/:id", (req: Request, res: Response) => {
