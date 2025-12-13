@@ -7,6 +7,7 @@ import type {
 import { pool } from "../config/database.ts";
 import type { QueryResult } from "pg";
 import type { ZodQuery } from "@/models/endpoints.model.ts";
+import { ApiError } from "@/utils/errors.ts";
 
 export class PostRepository {
   async findAll(rawQuery: ZodQuery): Promise<PaginatedPosts> {
@@ -40,9 +41,14 @@ export class PostRepository {
     `;
 
     const values = [id];
-
     const result: QueryResult<Post> = await pool.query(query, values);
-    return result.rows[0] as Post;
+    const post = result.rows[0];
+
+    if (!post) {
+      throw new ApiError(404, `Post with id ${id} not found`);
+    }
+
+    return post;
   }
 
   async create(postData: CreatePostDto): Promise<Post> {

@@ -22,10 +22,14 @@ export class PostService {
   };
 
   updatePost = async (id: number, data: UpdatePostDto) => {
+    await this.postRepository.findOne(id);
+
     return this.postRepository.update(id, data);
   };
 
   deletePost = async (id: number) => {
+    await this.postRepository.findOne(id);
+
     return this.postRepository.delete(id);
   };
 }
