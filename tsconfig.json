@@ -3,11 +3,11 @@
   "compilerOptions": {
     "rootDir": "./src",
     "outDir": "./dist",
-    "baseUrl": "./",
+    "baseUrl": ".",
     "paths": {
-      "@/": ["src/*"]
+      "@/*": ["src/*"]
     },
-
+    "resolveJsonModule": true,
     // Environment Settings
     "module": "nodenext",
     "moduleResolution": "nodenext",

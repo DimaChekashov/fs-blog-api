@@ -1,6 +1,6 @@
-import { PostRepository } from "./repositories/post.repository.js";
 import dotenv from "dotenv";
-import express, { type Request, type Response } from "express";
+import express from "express";
+import postRouter from "./routes/post.router.ts";
 
 const app = express();
 
@@ -8,102 +8,104 @@ app.use(express.json());
 
 dotenv.config();
 
-const posts = [
-  {
-    id: 1,
-    title: "Hello World",
-  },
-];
+app.use("/posts", postRouter);
 
-const postRepo = new PostRepository();
+// const posts = [
+//   {
+//     id: 1,
+//     title: "Hello World",
+//   },
+// ];
 
-app.get("/posts", async (req: Request, res: Response) => {
-  const posts = await postRepo.findAll();
-  return res.json({ posts });
-});
+// const postRepo = new PostRepository();
 
-app.post("/posts", async (req: Request, res: Response) => {
-  const { title } = req.body;
+// app.get("/posts", async (req: Request, res: Response) => {
+//   const posts = await postRepo.findAll();
+//   return res.json({ posts });
+// });
 
-  if (!title) {
-    return res.status(400).json({ error: "Send title field!" });
-  }
+// app.post("/posts", async (req: Request, res: Response) => {
+//   const { title } = req.body;
 
-  const post = await postRepo.create({ title });
+//   if (!title) {
+//     return res.status(400).json({ error: "Send title field!" });
+//   }
 
-  return res.status(201).json({ message: "Post created!", post });
-});
+//   const post = await postRepo.create({ title });
 
-app.put("/posts/:id", (req: Request, res: Response) => {
-  const { title } = req.body;
-  const id = req.params.id;
+//   return res.status(201).json({ message: "Post created!", post });
+// });
 
-  if (!title) {
-    return res.status(400).json({ error: "Send title field!" });
-  } else if (title === "") {
-    return res.status(400).json({ error: "Title must be filled!" });
-  }
+// app.put("/posts/:id", (req: Request, res: Response) => {
+//   const { title } = req.body;
+//   const id = req.params.id;
 
-  if (id && typeof id === "string") {
-    const idx = parseInt(id);
+//   if (!title) {
+//     return res.status(400).json({ error: "Send title field!" });
+//   } else if (title === "") {
+//     return res.status(400).json({ error: "Title must be filled!" });
+//   }
 
-    if (isNaN(idx) || idx <= 0) {
-      return res.status(400).json({
-        error: "Invalid ID. Must be a positive number",
-      });
-    }
+//   if (id && typeof id === "string") {
+//     const idx = parseInt(id);
 
-    if (idx > posts.length) {
-      return res.status(400).json({
-        error: `Post with ID ${id} not found`,
-      });
-    }
+//     if (isNaN(idx) || idx <= 0) {
+//       return res.status(400).json({
+//         error: "Invalid ID. Must be a positive number",
+//       });
+//     }
 
-    posts[idx - 1] = {
-      id: idx,
-      title: title,
-    };
+//     if (idx > posts.length) {
+//       return res.status(400).json({
+//         error: `Post with ID ${id} not found`,
+//       });
+//     }
 
-    return res
-      .status(200)
-      .json({ message: "Post updated!", post: posts[idx - 1] });
-  } else {
-    return res.status(400).json({
-      error: "ID parameter is required",
-    });
-  }
-});
+//     posts[idx - 1] = {
+//       id: idx,
+//       title: title,
+//     };
 
-app.delete("/posts/:id", (req: Request, res: Response) => {
-  const id = req.params.id;
+//     return res
+//       .status(200)
+//       .json({ message: "Post updated!", post: posts[idx - 1] });
+//   } else {
+//     return res.status(400).json({
+//       error: "ID parameter is required",
+//     });
+//   }
+// });
 
-  if (id && typeof id === "string") {
-    const idx = parseInt(id);
+// app.delete("/posts/:id", (req: Request, res: Response) => {
+//   const id = req.params.id;
 
-    if (isNaN(idx) || idx <= 0) {
-      return res.status(400).json({
-        error: "Invalid ID. Must be a positive number",
-      });
-    }
+//   if (id && typeof id === "string") {
+//     const idx = parseInt(id);
 
-    if (idx > posts.length) {
-      return res.status(400).json({
-        error: `Post with ID ${id} not found`,
-      });
-    }
+//     if (isNaN(idx) || idx <= 0) {
+//       return res.status(400).json({
+//         error: "Invalid ID. Must be a positive number",
+//       });
+//     }
 
-    const postIndex = posts.findIndex((post) => post.id === idx);
-    if (postIndex !== -1) {
-      posts.splice(postIndex, 1);
-    }
+//     if (idx > posts.length) {
+//       return res.status(400).json({
+//         error: `Post with ID ${id} not found`,
+//       });
+//     }
 
-    return res.status(200).json({ message: "Post deleted!" });
-  } else {
-    return res.status(400).json({
-      error: "ID parameter is required",
-    });
-  }
-});
+//     const postIndex = posts.findIndex((post) => post.id === idx);
+//     if (postIndex !== -1) {
+//       posts.splice(postIndex, 1);
+//     }
+
+//     return res.status(200).json({ message: "Post deleted!" });
+//   } else {
+//     return res.status(400).json({
+//       error: "ID parameter is required",
+//     });
+//   }
+// });
 
 app.listen(process.env.SERVER_PORT, () => {
   console.log(`Server running on http://localhost:${process.env.SERVER_PORT}`);
