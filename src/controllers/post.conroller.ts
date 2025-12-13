@@ -1,7 +1,14 @@
 import type { Request, Response } from "express";
 import type { PostService } from "@/services/post.service.ts";
 import { validateQuery } from "@/middlewares/validate-query.middleware.ts";
-import type { ZodQuery } from "@/models/endpoints.model.ts";
+import { validateBody } from "@/middlewares/validate-body.middleware.ts";
+import {
+  CreatePostSchema,
+  PostParamsSchema,
+  UpdatePostSchema,
+  type PostParams,
+} from "@/models/post.model.ts";
+import { validateParams } from "@/middlewares/validate-params.middleware.ts";
 
 export class PostController {
   constructor(private readonly postService: PostService) {}
@@ -25,56 +32,61 @@ export class PostController {
     },
   ];
 
-  getPost = async (req: Request, res: Response) => {
-    const { id } = req.params;
+  getPost = [
+    validateParams(PostParamsSchema),
+    async (req: Request, res: Response) => {
+      const { id } = req.validatedParams as PostParams;
 
-    const post = await this.postService.getPost({ id: parseInt(id as string) });
+      const post = await this.postService.getPost(id);
 
-    res.status(200).json({
-      success: true,
-      data: post,
-    });
-  };
+      res.status(200).json({
+        success: true,
+        data: post,
+      });
+    },
+  ];
 
-  createPost = async (req: Request, res: Response) => {
-    const { title } = req.body;
+  createPost = [
+    validateBody(CreatePostSchema),
+    async (req: Request, res: Response) => {
+      const postData = req.body;
 
-    const newPost = await this.postService.createPost({ title });
+      const newPost = await this.postService.createPost(postData);
 
-    res.status(201).json({
-      success: true,
-      data: newPost,
-      message: "Post created successfully",
-    });
-  };
+      res.status(201).json({
+        success: true,
+        data: newPost,
+      });
+    },
+  ];
 
-  updatePost = async (req: Request, res: Response) => {
-    const { id } = req.params;
-    const { title } = req.body;
+  updatePost = [
+    validateParams(PostParamsSchema),
+    validateBody(UpdatePostSchema),
+    async (req: Request, res: Response) => {
+      const { id } = req.validatedParams as PostParams;
+      const updateData = req.body;
 
-    const updatedPost = await this.postService.updatePost({
-      id: parseInt(id as string),
-      title,
-    });
+      const updatedPost = await this.postService.updatePost(id, updateData);
 
-    res.status(200).json({
-      success: true,
-      data: updatedPost,
-      message: "Post updated successfully",
-    });
-  };
+      res.status(200).json({
+        success: true,
+        data: updatedPost,
+      });
+    },
+  ];
 
-  deletePost = async (req: Request, res: Response) => {
-    const { id } = req.params;
+  deletePost = [
+    validateParams(PostParamsSchema),
+    async (req: Request, res: Response) => {
+      const { id } = req.validatedParams as PostParams;
 
-    const deletedPost = await this.postService.deletePost({
-      id: parseInt(id as string),
-    });
+      const deletedPost = await this.postService.deletePost(id);
 
-    res.status(200).json({
-      success: true,
-      data: deletedPost,
-      message: "Post deleted successfully",
-    });
-  };
+      res.status(200).json({
+        success: true,
+        data: deletedPost,
+      });
+    },
+  ];
 }

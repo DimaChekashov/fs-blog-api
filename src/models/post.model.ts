@@ -1,25 +1,3 @@
-// export interface Post {
-//   id: number;
-//   title: string;
-//   created_at: Date;
-// }
-
-export class GetPostDto {
-  constructor(public readonly id: number) {}
-}
-
-export class CreatePostDto {
-  constructor(public readonly title: string) {}
-}
-
-export class UpdatePostDto {
-  constructor(public readonly id: number, public readonly title: string) {}
-}
-
-export class DeletePostDto {
-  constructor(public readonly id: number) {}
-}
-
 import { z } from "zod";
 
 export const PostIdSchema = z.number().int().positive().brand<"PostId">();
@@ -36,6 +14,21 @@ export const PostSchema = z.object({
   title: TitleSchema,
 });
 export type Post = z.infer<typeof PostSchema>;
+
+export const CreatePostSchema = z.object({
+  title: TitleSchema,
+});
+export type CreatePostDto = z.infer<typeof CreatePostSchema>;
+
+export const UpdatePostSchema = z.object({
+  title: TitleSchema,
+});
+export type UpdatePostDto = z.infer<typeof UpdatePostSchema>;
+
+export const PostParamsSchema = z.object({
+  id: z.coerce.number().int().positive().brand<"PostId">(),
+});
+export type PostParams = z.infer<typeof PostParamsSchema>;
 
 export interface PaginatedPosts {
   posts: Post[];

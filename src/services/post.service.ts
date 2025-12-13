@@ -1,8 +1,6 @@
 import type { ZodQuery } from "@/models/endpoints.model.ts";
 import {
-  GetPostDto,
   type CreatePostDto,
-  type DeletePostDto,
   type PaginatedPosts,
   type UpdatePostDto,
 } from "@/models/post.model.ts";
@@ -15,19 +13,19 @@ export class PostService {
     return this.postRepository.findAll(rawQuery);
   };
 
-  getPost = async (data: GetPostDto) => {
-    return this.postRepository.findOne(data);
+  getPost = async (id: number) => {
+    return this.postRepository.findOne(id);
   };
 
   createPost = async (data: CreatePostDto) => {
     return this.postRepository.create(data);
   };
 
-  updatePost = async (data: UpdatePostDto) => {
-    return this.postRepository.update(data);
+  updatePost = async (id: number, data: UpdatePostDto) => {
+    return this.postRepository.update(id, data);
   };
 
-  deletePost = async (data: DeletePostDto) => {
-    return this.postRepository.delete(data);
+  deletePost = async (id: number) => {
+    return this.postRepository.delete(id);
   };
 }

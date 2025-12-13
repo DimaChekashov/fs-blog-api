@@ -26,7 +26,7 @@ export const validateQuery = (
     if (error instanceof ZodError) {
       return res.status(400).json({
         status: "error",
-        message: "Ошибка валидации параметров запроса",
+        message: "Error validating query parameters",
         errors: error.issues,
       });
     }

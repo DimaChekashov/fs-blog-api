@@ -1,7 +1,5 @@
 import type {
   CreatePostDto,
-  DeletePostDto,
-  GetPostDto,
   PaginatedPosts,
   Post,
   UpdatePostDto,
@@ -35,13 +33,13 @@ export class PostRepository {
     };
   }
 
-  async findOne(data: GetPostDto): Promise<Post> {
+  async findOne(id: number): Promise<Post> {
     const query = `
       SELECT * FROM posts
       WHERE id = $1
     `;
 
-    const values = [data.id];
+    const values = [id];
 
     const result: QueryResult<Post> = await pool.query(query, values);
     return result.rows[0] as Post;
@@ -60,7 +58,7 @@ export class PostRepository {
     return result.rows[0] as Post;
   }
 
-  async update(postData: UpdatePostDto): Promise<Post> {
+  async update(id: number, postData: UpdatePostDto): Promise<Post> {
     const query = `
       UPDATE posts
       SET title = $1
@@ -68,20 +66,20 @@ export class PostRepository {
       RETURnING *
     `;
 
-    const values = [postData.title, postData.id];
+    const values = [postData.title, id];
 
     const result: QueryResult<Post> = await pool.query(query, values);
     return result.rows[0] as Post;
   }
 
-  async delete(data: DeletePostDto): Promise<Post> {
+  async delete(id: number): Promise<Post> {
     const query = `
       DELETE FROM posts
       WHERE id = $1
       RETURnING *
     `;
 
-    const values = [data.id];
+    const values = [id];
 
     const result: QueryResult<Post> = await pool.query(query, values);
     return result.rows[0] as Post;
