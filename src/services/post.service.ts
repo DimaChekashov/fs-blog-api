@@ -1,7 +1,9 @@
+import type { ZodQuery } from "@/models/endpoints.model.ts";
 import {
   GetPostDto,
   type CreatePostDto,
   type DeletePostDto,
+  type PaginatedPosts,
   type UpdatePostDto,
 } from "@/models/post.model.ts";
 import type { PostRepository } from "@/repositories/post.repository.ts";
@@ -9,8 +11,8 @@ import type { PostRepository } from "@/repositories/post.repository.ts";
 export class PostService {
   constructor(private readonly postRepository: PostRepository) {}
 
-  getAllPosts = async () => {
-    return this.postRepository.findAll();
+  getAllPosts = async (rawQuery: ZodQuery): Promise<PaginatedPosts> => {
+    return this.postRepository.findAll(rawQuery);
   };
 
   getPost = async (data: GetPostDto) => {

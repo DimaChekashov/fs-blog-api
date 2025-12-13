@@ -37,10 +37,7 @@ export const PostSchema = z.object({
 });
 export type Post = z.infer<typeof PostSchema>;
 
-export const PostQuerySchema = z.object({
-  page: z.number().int().positive().default(1),
-  limit: z.number().int().min(1).max(100).default(20),
-  authorId: z.string().optional(),
-  search: z.string().optional(),
-});
-export type PostQuery = z.infer<typeof PostQuerySchema>;
+export interface PaginatedPosts {
+  posts: Post[];
+  total: number;
+}

@@ -2,20 +2,37 @@ import type {
   CreatePostDto,
   DeletePostDto,
   GetPostDto,
+  PaginatedPosts,
   Post,
   UpdatePostDto,
 } from "@/models/post.model.ts";
 import { pool } from "../config/database.ts";
 import type { QueryResult } from "pg";
+import type { ZodQuery } from "@/models/endpoints.model.ts";
 
 export class PostRepository {
-  async findAll(): Promise<Post[]> {
+  async findAll(rawQuery: ZodQuery): Promise<PaginatedPosts> {
     const query = `
         SELECT * FROM posts
+        LIMIT $1
+        OFFSET $2
     `;
 
-    const result: QueryResult<Post> = await pool.query(query);
-    return result.rows;
+    const queryTotal = `
+      SELECT count(*) FROM posts
+    `;
+
+    const values = [rawQuery.limit, (rawQuery.page - 1) * rawQuery.limit];
+
+    const result: QueryResult<Post> = await pool.query(query, values);
+    const totalResult: QueryResult = await pool.query(queryTotal);
+
+    const totalCount = parseInt(totalResult.rows[0].count);
+
+    return {
+      posts: result.rows,
+      total: totalCount,
+    };
   }
 
   async findOne(data: GetPostDto): Promise<Post> {

@@ -1,21 +1,26 @@
 import type { Request, Response } from "express";
 import type { PostService } from "@/services/post.service.ts";
-import { validate } from "@/middlewares/validation.middleware.ts";
-import z from "zod";
-import { PostQuerySchema } from "@/models/post.model.ts";
+import { validateQuery } from "@/middlewares/validate-query.middleware.ts";
+import type { ZodQuery } from "@/models/endpoints.model.ts";
 
 export class PostController {
   constructor(private readonly postService: PostService) {}
 
   getPosts = [
-    validate(z.object({ query: PostQuerySchema })),
+    validateQuery,
     async (req: Request, res: Response) => {
-      const posts = await this.postService.getAllPosts();
+      const query = req.validatedQuery;
+      const result = await this.postService.getAllPosts(query);
 
       res.status(200).json({
         success: true,
-        data: posts,
-        message: "Posts retrieved successfully",
+        data: result.posts,
+        meta: {
+          page: query.page,
+          limit: query.limit,
+          total: result.total,
+          pages: Math.ceil(result.total / query.limit),
+        },
       });
     },
   ];
@@ -28,7 +33,6 @@ export class PostController {
     res.status(200).json({
       success: true,
       data: post,
-      message: "Post retrieved successfully",
     });
   };
 
