@@ -4,6 +4,10 @@ export interface Post {
   created_at: Date;
 }
 
+export class GetPostDto {
+  constructor(public readonly id: number) {}
+}
+
 export class CreatePostDto {
   constructor(public readonly title: string) {}
 }

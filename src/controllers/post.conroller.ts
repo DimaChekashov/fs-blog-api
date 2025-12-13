@@ -14,6 +14,18 @@ export class PostController {
     });
   };
 
+  getPost = async (req: Request, res: Response) => {
+    const { id } = req.params;
+
+    const post = await this.postService.getPost({ id: parseInt(id as string) });
+
+    res.status(200).json({
+      success: true,
+      data: post,
+      message: "Post retrieved successfully",
+    });
+  };
+
   createPost = async (req: Request, res: Response) => {
     const { title } = req.body;
 

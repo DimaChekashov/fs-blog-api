@@ -10,6 +10,7 @@ const postController = new PostController(postService);
 const postRouter = Router();
 
 postRouter.get("/", postController.getPosts);
+postRouter.get("/:id", postController.getPost);
 postRouter.post("/", postController.createPost);
 postRouter.put("/:id", postController.updatePost);
 postRouter.delete("/:id", postController.deletePost);

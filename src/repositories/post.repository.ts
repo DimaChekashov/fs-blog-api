@@ -1,6 +1,7 @@
 import type {
   CreatePostDto,
   DeletePostDto,
+  GetPostDto,
   Post,
   UpdatePostDto,
 } from "@/models/post.model.ts";
@@ -15,6 +16,18 @@ export class PostRepository {
 
     const result: QueryResult<Post> = await pool.query(query);
     return result.rows;
+  }
+
+  async findOne(data: GetPostDto): Promise<Post> {
+    const query = `
+      SELECT * FROM posts
+      WHERE id = $1
+    `;
+
+    const values = [data.id];
+
+    const result: QueryResult<Post> = await pool.query(query, values);
+    return result.rows[0] as Post;
   }
 
   async create(postData: CreatePostDto): Promise<Post> {

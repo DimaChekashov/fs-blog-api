@@ -1,7 +1,8 @@
-import type {
-  CreatePostDto,
-  DeletePostDto,
-  UpdatePostDto,
+import {
+  GetPostDto,
+  type CreatePostDto,
+  type DeletePostDto,
+  type UpdatePostDto,
 } from "@/models/post.model.ts";
 import type { PostRepository } from "@/repositories/post.repository.ts";
 
@@ -10,6 +11,10 @@ export class PostService {
 
   getAllPosts = async () => {
     return this.postRepository.findAll();
+  };
+
+  getPost = async (data: GetPostDto) => {
+    return this.postRepository.findOne(data);
   };
 
   createPost = async (data: CreatePostDto) => {
