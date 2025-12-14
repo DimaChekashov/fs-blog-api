@@ -10,6 +10,7 @@
     "build": "tsc",
     "start": "node dist/server.js",
     "migrate": "npx tsx src/database/migrations/run-migrations.ts",
+    "seed": "npx tsx src/database/seeds/run-seeds.ts",
     "db:up": "docker compose up -d postgres",
     "db:down": "docker compose down",
     "db:logs": "docker compose logs -f postgres"
