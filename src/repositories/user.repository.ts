@@ -2,20 +2,33 @@ import { pool } from "@/config/database.ts";
 import type { CreateUserDto, User } from "@/models/user.model.ts";
 import { ApiError } from "@/utils/errors.ts";
 import type { QueryResult } from "pg";
+import * as changeKeys from "change-case/keys";
 
 export class UserRepository {
-  async findOne(email: string): Promise<User | null> {
-    const query = `
-      SELECT * FROM users
-      WHERE email = $1
-    `;
+  async findOne(email: string, username?: string): Promise<User | null> {
+    let values;
+    let query;
 
-    const result: QueryResult<User> = await pool.query(query, [email]);
+    if (!username) {
+      query = `
+        SELECT * FROM users
+        WHERE email = $1
+      `;
+      values = [email];
+    } else {
+      query = `
+        SELECT * FROM users
+        WHERE email = $1 OR username = $2
+      `;
+      values = [email, username];
+    }
+
+    const result: QueryResult<User> = await pool.query(query, values);
     const user = result.rows[0];
 
     if (!user) return null;
 
-    return user;
+    return changeKeys.camelCase(user) as User;
   }
 
   async create(userData: CreateUserDto, hashedPassword: string): Promise<User> {
@@ -33,7 +46,7 @@ export class UserRepository {
       throw new ApiError(500, "Error while create user!");
     }
 
-    return user;
+    return changeKeys.camelCase(user) as User;
   }
 
   async delete() {}

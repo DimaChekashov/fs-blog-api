@@ -1,6 +1,7 @@
 import type {
   AuthResponse,
   CreateUserDto,
+  LoginUserDto,
   LoginUserSchema,
 } from "@/models/user.model.ts";
 import type { UserRepository } from "@/repositories/user.repository.ts";
@@ -16,12 +17,15 @@ export class AuthService {
   ) {}
 
   async register(userData: CreateUserDto): Promise<AuthResponse> {
-    const user = await this.userRepository.findOne(userData.email);
+    const user = await this.userRepository.findOne(
+      userData.email,
+      userData.username
+    );
 
     if (user !== null) {
       throw new ApiError(
         409,
-        "User with that username, email or password already exists!"
+        "User with that username or email is already exists!"
       );
     }
 
@@ -35,9 +39,28 @@ export class AuthService {
     };
   }
 
-  // async login(credentials: LoginUserSchema): Promise<AuthResponse> {
-  //   const isMatch = await comparePassword(credentials.password, hashedPassword);
-  // }
+  async login(credentials: LoginUserDto): Promise<AuthResponse> {
+    const user = await this.userRepository.findOne(credentials.email);
+
+    if (user === null) {
+      throw new ApiError(400, "Wrong email!");
+    }
+
+    const isMatch = await comparePassword(
+      credentials.password,
+      user.hashedPassword
+    );
+
+    if (!isMatch) {
+      throw new ApiError(400, "Wrong password!");
+    }
+
+    const { hashedPassword, ...userWithoutHash } = user;
+
+    return {
+      user: userWithoutHash,
+    };
+  }
 
   // async logout(userId: number): Promise<void> {}
 }

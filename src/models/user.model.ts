@@ -47,7 +47,7 @@ export const LoginUserSchema = z.object({
   email: EmailSchema,
   password: PasswordSchema,
 });
-export type LoginUserSchema = z.infer<typeof LoginUserSchema>;
+export type LoginUserDto = z.infer<typeof LoginUserSchema>;
 
 export const AuthResponseSchema = z.object({
   user: UserSchema.omit({ hashedPassword: true }),
