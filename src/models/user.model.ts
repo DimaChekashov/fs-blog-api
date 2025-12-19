@@ -49,12 +49,15 @@ export const LoginUserSchema = z.object({
 });
 export type LoginUserDto = z.infer<typeof LoginUserSchema>;
 
+export const TokensSchema = z.object({
+  accessToken: z.string(),
+  refreshToken: z.string(),
+  expiresIn: z.number(),
+});
+export type Tokens = z.infer<typeof TokensSchema>;
+
 export const AuthResponseSchema = z.object({
   user: UserSchema.omit({ hashedPassword: true }),
-  // tokens: z.object({
-  //   access_token: z.string(),
-  //   refresh_token: z.string(),
-  //   expires_in: z.number(),
-  // }),
+  tokens: TokensSchema,
 });
 export type AuthResponse = z.infer<typeof AuthResponseSchema>;

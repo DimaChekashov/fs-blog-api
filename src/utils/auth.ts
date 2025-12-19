@@ -1,12 +1,34 @@
-import jwt from "jsonwebtoken";
+import jwt, { type JwtPayload } from "jsonwebtoken";
 import bcrypt from "bcryptjs";
+import type { Tokens } from "@/models/user.model.ts";
 
 const SALT_ROUNDS = 10;
 
-export const createToken = () => {
-  const token = jwt.sign({ foo: "bar" }, "shhhh");
+export const createToken = (
+  payload: JwtPayload,
+  secretKey: string,
+  expire: number
+) => {
+  const token = jwt.sign(payload, secretKey, {
+    algorithm: "HS256",
+    expiresIn: Math.floor(Date.now() / 1000) + expire,
+  });
 
   return token;
+};
+
+export const createTokens = (
+  payload: JwtPayload,
+  jwtSecret: string,
+  jwtExpire: number,
+  jwtRefreshSecret: string,
+  jwtRefreshExpire: number
+): Tokens => {
+  return {
+    accessToken: createToken(payload, jwtSecret, jwtExpire),
+    refreshToken: createToken(payload, jwtRefreshSecret, jwtRefreshExpire),
+    expiresIn: jwtRefreshExpire,
+  };
 };
 
 export const hashPassword = async (password: string): Promise<string> => {
