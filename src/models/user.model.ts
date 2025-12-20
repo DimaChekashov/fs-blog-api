@@ -56,8 +56,11 @@ export const TokensSchema = z.object({
 });
 export type Tokens = z.infer<typeof TokensSchema>;
 
+export const UserResponseSchema = UserSchema.omit({ hashedPassword: true });
+export type UserResponse = z.infer<typeof UserResponseSchema>;
+
 export const AuthResponseSchema = z.object({
-  user: UserSchema.omit({ hashedPassword: true }),
+  user: UserResponseSchema,
   tokens: TokensSchema,
 });
 export type AuthResponse = z.infer<typeof AuthResponseSchema>;

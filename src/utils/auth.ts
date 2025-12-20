@@ -5,7 +5,7 @@ import type { Tokens } from "@/models/user.model.ts";
 const SALT_ROUNDS = 10;
 
 export const createToken = (
-  payload: JwtPayload,
+  payload: string | object | JwtPayload,
   secretKey: string,
   expire: number
 ) => {
@@ -18,7 +18,7 @@ export const createToken = (
 };
 
 export const createTokens = (
-  payload: JwtPayload,
+  payload: string | object | JwtPayload,
   jwtSecret: string,
   jwtExpire: number,
   jwtRefreshSecret: string,

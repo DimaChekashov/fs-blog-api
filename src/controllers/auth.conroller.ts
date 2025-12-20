@@ -1,3 +1,4 @@
+import { auth } from "@/middlewares/auth.middleware.ts";
 import { validateBody } from "@/middlewares/validate-body.middleware.ts";
 import { CreateUserSchema, LoginUserSchema } from "@/models/user.model.ts";
 import type { AuthService } from "@/services/auth.service.ts";
@@ -38,5 +39,17 @@ export class AuthController {
 
   refresh(req: Request, res: Response) {}
 
-  me(req: Request, res: Response) {}
+  me = [
+    auth,
+    async (req: Request, res: Response) => {
+      const { sub } = req.user;
+
+      const user = await this.authService.me(sub);
+
+      res.json({
+        success: true,
+        data: user,
+      });
+    },
+  ];
 }

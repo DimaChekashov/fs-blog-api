@@ -1,21 +1,16 @@
+import { jwtSecret, refreshSecret } from "@/consts.ts";
 import type {
   AuthResponse,
   CreateUserDto,
   LoginUserDto,
-  LoginUserSchema,
+  UserResponse,
 } from "@/models/user.model.ts";
 import type { UserRepository } from "@/repositories/user.repository.ts";
 import { comparePassword, createTokens, hashPassword } from "@/utils/auth.ts";
 import { ApiError } from "@/utils/errors.ts";
 
 export class AuthService {
-  constructor(
-    private readonly userRepository: UserRepository,
-    private jwtSecret: string = process.env.JWT_SECRET_KEY ||
-      "your-secret-key-here",
-    private refreshSecret: string = process.env.JWT_REFRESH_SECRET_KEY ||
-      "your-refresh-secret-here"
-  ) {}
+  constructor(private readonly userRepository: UserRepository) {}
 
   async register(userData: CreateUserDto): Promise<AuthResponse> {
     const user = await this.userRepository.findOne(
@@ -38,10 +33,10 @@ export class AuthService {
     return {
       user: userWithoutHash,
       tokens: createTokens(
-        userWithoutHash,
-        this.jwtSecret,
+        { sub: userWithoutHash.id },
+        jwtSecret,
         15 * 60,
-        this.refreshSecret,
+        refreshSecret,
         60 * 60 * 24 * 7
       ),
     };
@@ -68,14 +63,18 @@ export class AuthService {
     return {
       user: userWithoutHash,
       tokens: createTokens(
-        userWithoutHash,
-        this.jwtSecret,
+        { sub: userWithoutHash.id },
+        jwtSecret,
         15 * 60,
-        this.refreshSecret,
+        refreshSecret,
         60 * 60 * 24 * 7
       ),
     };
   }
 
-  // async logout(userId: number): Promise<void> {}
+  async me(userId: number): Promise<UserResponse> {
+    const user = await this.userRepository.findOneById(userId);
+
+    return user;
+  }
 }

@@ -5,6 +5,17 @@ import type { QueryResult } from "pg";
 import * as changeKeys from "change-case/keys";
 
 export class UserRepository {
+  async findOneById(id: number): Promise<User> {
+    const query = `
+      SELECT * FROM users
+      WHERE id = $1
+    `;
+
+    const result: QueryResult<User> = await pool.query(query, [id]);
+
+    return changeKeys.camelCase(result.rows[0]) as User;
+  }
+
   async findOne(email: string, username?: string): Promise<User | null> {
     let values;
     let query;
