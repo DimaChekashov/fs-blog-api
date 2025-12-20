@@ -75,6 +75,8 @@ export class AuthService {
   async me(userId: number): Promise<UserResponse> {
     const user = await this.userRepository.findOneById(userId);
 
-    return user;
+    const { hashedPassword, ...userWithoutHash } = user;
+
+    return userWithoutHash;
   }
 }
