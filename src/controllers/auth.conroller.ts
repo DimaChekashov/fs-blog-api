@@ -4,9 +4,10 @@ import {
   CreateUserSchema,
   LoginUserSchema,
   RefreshTokenSchema,
-  UpdateAccessTokenSchema,
+  RefreshTokenPayloadSchema,
 } from "@/models/user.model.ts";
 import type { AuthService } from "@/services/auth.service.ts";
+import { ApiError } from "@/utils/errors.ts";
 import type { Request, Response } from "express";
 
 export class AuthController {
@@ -40,10 +41,27 @@ export class AuthController {
     },
   ];
 
-  logout = [auth, async (req: Request, res: Response) => {}];
+  logout = [
+    auth,
+    validateBody(RefreshTokenPayloadSchema),
+    async (req: Request, res: Response) => {
+      const accessToken = req.headers.authorization?.split(" ")[1];
+      const { refreshToken } = req.body;
+
+      if (!accessToken || !refreshToken) {
+        throw new ApiError(401, "No access or refresh token provided!");
+      }
+
+      await this.authService.logout(accessToken, refreshToken);
+
+      res.status(200).json({
+        success: true,
+      });
+    },
+  ];
 
   refresh = [
-    validateBody(UpdateAccessTokenSchema),
+    validateBody(RefreshTokenPayloadSchema),
     async (req: Request, res: Response) => {
       const { refreshToken } = req.body;
 

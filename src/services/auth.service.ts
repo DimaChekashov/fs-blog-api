@@ -1,5 +1,6 @@
 import jwt from "jsonwebtoken";
 import type {
+  AccessToken,
   AccessTokenResponse,
   AuthResponse,
   CreateUserDto,
@@ -12,13 +13,18 @@ import {
   comparePassword,
   createToken,
   createTokens,
+  getTokenExpiresAt,
   hashPassword,
 } from "@/utils/auth.ts";
 import { ApiError } from "@/utils/errors.ts";
 import { jwtSecret, refreshSecret } from "@/consts.ts";
+import type { TokenRepository } from "@/repositories/token.repository.ts";
 
 export class AuthService {
-  constructor(private readonly userRepository: UserRepository) {}
+  constructor(
+    private readonly userRepository: UserRepository,
+    private readonly tokenRepository: TokenRepository
+  ) {}
 
   async register(userData: CreateUserDto): Promise<AuthResponse> {
     const user = await this.userRepository.findOne(
@@ -77,11 +83,18 @@ export class AuthService {
   }
 
   async refresh(refreshToken: RefreshToken): Promise<AccessTokenResponse> {
+    const isTokenBlacklisted = await this.tokenRepository.isTokenBlacklisted(
+      refreshToken
+    );
+    if (isTokenBlacklisted) {
+      throw new ApiError(401, "Refresh token revoked!");
+    }
+
     try {
-      const decode = jwt.verify(refreshToken, refreshSecret);
+      const decoded = jwt.verify(refreshToken, refreshSecret);
 
       const newAccessToken = createToken(
-        { sub: decode.sub },
+        { sub: decoded.sub },
         jwtSecret,
         15 * 60
       );
@@ -91,6 +104,21 @@ export class AuthService {
       };
     } catch (error) {
       throw new ApiError(401, "Invalid or expired refresh token!");
+    }
+  }
+
+  async logout(accessToken: AccessToken, refreshToken: RefreshToken) {
+    try {
+      const accessTokenExpiresAt = getTokenExpiresAt(accessToken, jwtSecret);
+      this.tokenRepository.blacklistToken(accessToken, accessTokenExpiresAt);
+
+      const refreshTokenExpiresAt = getTokenExpiresAt(
+        refreshToken,
+        refreshSecret
+      );
+      this.tokenRepository.blacklistToken(refreshToken, refreshTokenExpiresAt);
+    } catch (error) {
+      throw new ApiError(401, "Invalid or expired access or refresh token!");
     }
   }
 }

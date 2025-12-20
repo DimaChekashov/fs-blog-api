@@ -62,10 +62,10 @@ export const TokensSchema = z.object({
 });
 export type Tokens = z.infer<typeof TokensSchema>;
 
-export const UpdateAccessTokenSchema = z.object({
+export const RefreshTokenPayloadSchema = z.object({
   refreshToken: RefreshTokenSchema,
 });
-export type UpdateAccessTokenDto = z.infer<typeof UpdateAccessTokenSchema>;
+export type RefreshTokenPayloadDto = z.infer<typeof RefreshTokenPayloadSchema>;
 
 export const AccessTokenResponseSchema = z.object({
   accessToken: AccessTokenSchema,

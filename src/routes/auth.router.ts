@@ -1,10 +1,12 @@
 import { AuthController } from "@/controllers/auth.conroller.ts";
+import { TokenRepository } from "@/repositories/token.repository.ts";
 import { UserRepository } from "@/repositories/user.repository.ts";
 import { AuthService } from "@/services/auth.service.ts";
 import { Router } from "express";
 
 const authRepository = new UserRepository();
-const authService = new AuthService(authRepository);
+const tokenRepository = new TokenRepository();
+const authService = new AuthService(authRepository, tokenRepository);
 const authController = new AuthController(authService);
 
 const authRouter = Router();
