@@ -11,7 +11,7 @@ export const createToken = (
 ) => {
   const token = jwt.sign(payload, secretKey, {
     algorithm: "HS256",
-    expiresIn: Math.floor(Date.now() / 1000) + expire,
+    expiresIn: expire,
   });
 
   return token;
