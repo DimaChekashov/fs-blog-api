@@ -1,6 +1,7 @@
 import jwt, { type JwtPayload } from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 import type { Tokens } from "@/models/user.model.ts";
+import { jwtSecret, refreshSecret } from "@/consts.ts";
 
 const SALT_ROUNDS = 10;
 
@@ -19,15 +20,12 @@ export const createToken = (
 
 export const createTokens = (
   payload: string | object | JwtPayload,
-  jwtSecret: string,
-  jwtExpire: number,
-  jwtRefreshSecret: string,
-  jwtRefreshExpire: number
+  jwtExpire: number
 ): Tokens => {
   return {
     accessToken: createToken(payload, jwtSecret, jwtExpire),
-    refreshToken: createToken(payload, jwtRefreshSecret, jwtRefreshExpire),
-    expiresIn: jwtRefreshExpire,
+    refreshToken: createToken(payload, refreshSecret, 60 * 60 * 24 * 7),
+    expiresIn: jwtExpire,
   };
 };
 

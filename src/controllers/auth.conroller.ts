@@ -1,6 +1,11 @@
 import { auth } from "@/middlewares/auth.middleware.ts";
 import { validateBody } from "@/middlewares/validate-body.middleware.ts";
-import { CreateUserSchema, LoginUserSchema } from "@/models/user.model.ts";
+import {
+  CreateUserSchema,
+  LoginUserSchema,
+  RefreshTokenSchema,
+  UpdateAccessTokenSchema,
+} from "@/models/user.model.ts";
 import type { AuthService } from "@/services/auth.service.ts";
 import type { Request, Response } from "express";
 
@@ -35,9 +40,21 @@ export class AuthController {
     },
   ];
 
-  logout(req: Request, res: Response) {}
+  logout = [auth, async (req: Request, res: Response) => {}];
 
-  refresh(req: Request, res: Response) {}
+  refresh = [
+    validateBody(UpdateAccessTokenSchema),
+    async (req: Request, res: Response) => {
+      const { refreshToken } = req.body;
+
+      const accessTokenResponse = await this.authService.refresh(refreshToken);
+
+      res.status(200).json({
+        success: true,
+        data: accessTokenResponse,
+      });
+    },
+  ];
 
   me = [
     auth,

@@ -1,13 +1,21 @@
-import { jwtSecret, refreshSecret } from "@/consts.ts";
+import jwt from "jsonwebtoken";
 import type {
+  AccessTokenResponse,
   AuthResponse,
   CreateUserDto,
   LoginUserDto,
+  RefreshToken,
   UserResponse,
 } from "@/models/user.model.ts";
 import type { UserRepository } from "@/repositories/user.repository.ts";
-import { comparePassword, createTokens, hashPassword } from "@/utils/auth.ts";
+import {
+  comparePassword,
+  createToken,
+  createTokens,
+  hashPassword,
+} from "@/utils/auth.ts";
 import { ApiError } from "@/utils/errors.ts";
+import { jwtSecret, refreshSecret } from "@/consts.ts";
 
 export class AuthService {
   constructor(private readonly userRepository: UserRepository) {}
@@ -32,13 +40,7 @@ export class AuthService {
 
     return {
       user: userWithoutHash,
-      tokens: createTokens(
-        { sub: userWithoutHash.id },
-        jwtSecret,
-        15 * 60,
-        refreshSecret,
-        60 * 60 * 24 * 7
-      ),
+      tokens: createTokens({ sub: userWithoutHash.id }, 15 * 60),
     };
   }
 
@@ -62,13 +64,7 @@ export class AuthService {
 
     return {
       user: userWithoutHash,
-      tokens: createTokens(
-        { sub: userWithoutHash.id },
-        jwtSecret,
-        15 * 60,
-        refreshSecret,
-        60 * 60 * 24 * 7
-      ),
+      tokens: createTokens({ sub: userWithoutHash.id }, 15 * 60),
     };
   }
 
@@ -78,5 +74,23 @@ export class AuthService {
     const { hashedPassword, ...userWithoutHash } = user;
 
     return userWithoutHash;
+  }
+
+  async refresh(refreshToken: RefreshToken): Promise<AccessTokenResponse> {
+    try {
+      const decode = jwt.verify(refreshToken, refreshSecret);
+
+      const newAccessToken = createToken(
+        { sub: decode.sub },
+        jwtSecret,
+        15 * 60
+      );
+
+      return {
+        accessToken: newAccessToken,
+      };
+    } catch (error) {
+      throw new ApiError(401, "Invalid or expired refresh token!");
+    }
   }
 }

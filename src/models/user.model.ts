@@ -49,12 +49,28 @@ export const LoginUserSchema = z.object({
 });
 export type LoginUserDto = z.infer<typeof LoginUserSchema>;
 
+export const AccessTokenSchema = z.string();
+export type AccessToken = z.infer<typeof AccessTokenSchema>;
+
+export const RefreshTokenSchema = z.string();
+export type RefreshToken = z.infer<typeof RefreshTokenSchema>;
+
 export const TokensSchema = z.object({
-  accessToken: z.string(),
-  refreshToken: z.string(),
-  expiresIn: z.number(),
+  accessToken: AccessTokenSchema,
+  refreshToken: RefreshTokenSchema,
+  expiresIn: z.number().positive(),
 });
 export type Tokens = z.infer<typeof TokensSchema>;
+
+export const UpdateAccessTokenSchema = z.object({
+  refreshToken: RefreshTokenSchema,
+});
+export type UpdateAccessTokenDto = z.infer<typeof UpdateAccessTokenSchema>;
+
+export const AccessTokenResponseSchema = z.object({
+  accessToken: AccessTokenSchema,
+});
+export type AccessTokenResponse = z.infer<typeof AccessTokenResponseSchema>;
 
 export const UserResponseSchema = UserSchema.omit({ hashedPassword: true });
 export type UserResponse = z.infer<typeof UserResponseSchema>;
