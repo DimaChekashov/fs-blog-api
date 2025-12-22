@@ -9,6 +9,7 @@ import {
   type PostParams,
 } from "@/models/post.model.ts";
 import { validateParams } from "@/middlewares/validate-params.middleware.ts";
+import { auth } from "@/middlewares/auth.middleware.ts";
 
 export class PostController {
   constructor(private readonly postService: PostService) {}
@@ -47,6 +48,7 @@ export class PostController {
   ];
 
   createPost = [
+    auth,
     validateBody(CreatePostSchema),
     async (req: Request, res: Response) => {
       const postData = req.body;
@@ -61,6 +63,7 @@ export class PostController {
   ];
 
   updatePost = [
+    auth,
     validateParams(PostParamsSchema),
     validateBody(UpdatePostSchema),
     async (req: Request, res: Response) => {
@@ -77,6 +80,7 @@ export class PostController {
   ];
 
   deletePost = [
+    auth,
     validateParams(PostParamsSchema),
     async (req: Request, res: Response) => {
       const { id } = req.validatedParams as PostParams;

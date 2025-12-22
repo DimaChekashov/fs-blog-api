@@ -1,4 +1,5 @@
 import z from "zod";
+import { CreatedAt, UpdatedAt } from "./index.model.ts";
 
 export const UserIdSchema = z.number().int().positive().brand<"UserId">();
 export type UserId = z.infer<typeof UserIdSchema>;
@@ -18,10 +19,6 @@ export const PasswordSchema = z
   .trim();
 
 export const IsActive = z.boolean();
-
-export const CreatedAt = z.date();
-
-export const UpdatedAt = z.date();
 
 export const HashedPassword = z.string();
 
