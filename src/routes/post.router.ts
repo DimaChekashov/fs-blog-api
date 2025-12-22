@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { PostController } from "@/controllers/post.conroller.ts";
+import { PostController } from "@/controllers/post.controller.ts";
 import { PostRepository } from "@/repositories/post.repository.ts";
 import { PostService } from "@/services/post.service.ts";
 

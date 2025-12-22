@@ -1,4 +1,4 @@
-import { AuthController } from "@/controllers/auth.conroller.ts";
+import { AuthController } from "@/controllers/auth.controller.ts";
 import { TokenRepository } from "@/repositories/token.repository.ts";
 import { UserRepository } from "@/repositories/user.repository.ts";
 import { AuthService } from "@/services/auth.service.ts";

@@ -2,6 +2,7 @@ import type { ZodQuery } from "@/models/endpoints.model.ts";
 import {
   type CreatePostDto,
   type PaginatedPosts,
+  type Post,
   type PostId,
   type UpdatePostDto,
 } from "@/models/post.model.ts";
@@ -12,19 +13,23 @@ import { ApiError } from "@/utils/errors.ts";
 export class PostService {
   constructor(private readonly postRepository: PostRepository) {}
 
-  getAllPosts = async (rawQuery: ZodQuery): Promise<PaginatedPosts> => {
+  async getAllPosts(rawQuery: ZodQuery): Promise<PaginatedPosts> {
     return this.postRepository.findAll(rawQuery);
-  };
+  }
 
-  getPost = async (postId: PostId) => {
+  async getPost(postId: PostId): Promise<Post> {
     return this.postRepository.findOne(postId);
-  };
+  }
 
-  createPost = async (data: CreatePostDto, userId: UserId) => {
+  async createPost(data: CreatePostDto, userId: UserId): Promise<Post> {
     return this.postRepository.create(data, userId);
-  };
+  }
 
-  updatePost = async (postId: PostId, userId: UserId, data: UpdatePostDto) => {
+  async updatePost(
+    postId: PostId,
+    userId: UserId,
+    data: UpdatePostDto
+  ): Promise<Post> {
     const post = await this.postRepository.findOne(postId);
 
     if (post.authorId !== userId) {
@@ -32,15 +37,15 @@ export class PostService {
     }
 
     return this.postRepository.update(postId, data);
-  };
+  }
 
-  deletePost = async (postId: PostId, userId: UserId) => {
+  async deletePost(postId: PostId, userId: UserId): Promise<Post> {
     const post = await this.postRepository.findOne(postId);
 
     if (post.authorId !== userId) {
-      throw new ApiError(403, `You are not authorized to update this post`);
+      throw new ApiError(403, `You are not authorized to delete this post`);
     }
 
     return this.postRepository.delete(postId);
-  };
+  }
 }

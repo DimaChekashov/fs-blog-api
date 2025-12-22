@@ -3,6 +3,7 @@ import express from "express";
 import postRouter from "./routes/post.router.ts";
 import { errorHandler } from "./middlewares/error.middleware.ts";
 import authRouter from "./routes/auth.router.ts";
+import commentRouter from "./routes/comment.router.ts";
 
 const app = express();
 
@@ -10,8 +11,9 @@ app.use(express.json());
 
 dotenv.config();
 
-app.use("/api/posts", postRouter);
 app.use("/api/auth", authRouter);
+app.use("/api/posts", postRouter);
+app.use("/api/comments", commentRouter);
 
 app.use(errorHandler);
 
