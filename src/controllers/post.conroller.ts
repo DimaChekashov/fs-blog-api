@@ -52,8 +52,9 @@ export class PostController {
     validateBody(CreatePostSchema),
     async (req: Request, res: Response) => {
       const postData = req.body;
+      const { sub: userId } = req.user;
 
-      const newPost = await this.postService.createPost(postData);
+      const newPost = await this.postService.createPost(postData, userId);
 
       res.status(201).json({
         success: true,
@@ -67,10 +68,15 @@ export class PostController {
     validateParams(PostParamsSchema),
     validateBody(UpdatePostSchema),
     async (req: Request, res: Response) => {
-      const { id } = req.validatedParams as PostParams;
+      const { id: postId } = req.validatedParams as PostParams;
       const updateData = req.body;
+      const { sub: userId } = req.user;
 
-      const updatedPost = await this.postService.updatePost(id, updateData);
+      const updatedPost = await this.postService.updatePost(
+        postId,
+        userId,
+        updateData
+      );
 
       res.status(200).json({
         success: true,
@@ -83,9 +89,10 @@ export class PostController {
     auth,
     validateParams(PostParamsSchema),
     async (req: Request, res: Response) => {
-      const { id } = req.validatedParams as PostParams;
+      const { id: postId } = req.validatedParams as PostParams;
+      const { sub: userId } = req.user;
 
-      const deletedPost = await this.postService.deletePost(id);
+      const deletedPost = await this.postService.deletePost(postId, userId);
 
       res.status(200).json({
         success: true,

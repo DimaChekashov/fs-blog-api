@@ -26,14 +26,12 @@ export type Post = z.infer<typeof PostSchema>;
 export const CreatePostSchema = z.object({
   title: TitleSchema,
   content: ContentSchema,
-  authorId: UserIdSchema,
 });
 export type CreatePostDto = z.infer<typeof CreatePostSchema>;
 
 export const UpdatePostSchema = z.object({
   title: TitleSchema,
   content: ContentSchema,
-  authorId: UserIdSchema,
 });
 export type UpdatePostDto = z.infer<typeof UpdatePostSchema>;
 

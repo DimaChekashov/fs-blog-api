@@ -2,12 +2,15 @@ import type {
   CreatePostDto,
   PaginatedPosts,
   Post,
+  PostId,
   UpdatePostDto,
 } from "@/models/post.model.ts";
 import { pool } from "../config/database.ts";
 import type { QueryResult } from "pg";
 import type { ZodQuery } from "@/models/endpoints.model.ts";
 import { ApiError } from "@/utils/errors.ts";
+import type { UserId } from "@/models/user.model.ts";
+import * as changeKeys from "change-case/keys";
 
 export class PostRepository {
   async findAll(rawQuery: ZodQuery): Promise<PaginatedPosts> {
@@ -29,56 +32,60 @@ export class PostRepository {
     const totalCount = parseInt(totalResult.rows[0].count);
 
     return {
-      posts: result.rows,
+      posts: changeKeys.camelCase(result.rows) as Post[],
       total: totalCount,
     };
   }
 
-  async findOne(id: number): Promise<Post> {
+  async findOne(postId: PostId): Promise<Post> {
     const query = `
       SELECT * FROM posts
       WHERE id = $1
     `;
 
-    const values = [id];
+    const values = [postId];
     const result: QueryResult<Post> = await pool.query(query, values);
     const post = result.rows[0];
 
     if (!post) {
-      throw new ApiError(404, `Post with id ${id} not found`);
+      throw new ApiError(404, `Post with id ${postId} not found`);
     }
 
-    return post;
+    return changeKeys.camelCase(post) as Post;
   }
 
-  async create(postData: CreatePostDto): Promise<Post> {
+  async create(postData: CreatePostDto, userId: UserId): Promise<Post> {
     const query = `
-      INSERT INTO posts (title) 
-      VALUES ($1) 
+      INSERT INTO posts (title, content, author_id) 
+      VALUES ($1, $2, $3) 
       RETURNING *
     `;
 
-    const values = [postData.title];
+    const values = [postData.title, postData.content, userId];
 
     const result: QueryResult<Post> = await pool.query(query, values);
-    return result.rows[0] as Post;
+
+    return changeKeys.camelCase(result.rows[0]) as Post;
   }
 
-  async update(id: number, postData: UpdatePostDto): Promise<Post> {
+  async update(postId: PostId, postData: UpdatePostDto): Promise<Post> {
     const query = `
       UPDATE posts
-      SET title = $1
-      WHERE id = $2
-      RETURnING *
+      SET title = COALESCE($1, title), 
+          content = COALESCE($2, content),
+          updated_at = CURRENT_TIMESTAMP
+      WHERE id = $3
+      RETURNING *
     `;
 
-    const values = [postData.title, id];
+    const values = [postData.title, postData.content, postId];
 
     const result: QueryResult<Post> = await pool.query(query, values);
-    return result.rows[0] as Post;
+
+    return changeKeys.camelCase(result.rows[0]) as Post;
   }
 
-  async delete(id: number): Promise<Post> {
+  async delete(id: PostId): Promise<Post> {
     const query = `
       DELETE FROM posts
       WHERE id = $1
@@ -88,6 +95,7 @@ export class PostRepository {
     const values = [id];
 
     const result: QueryResult<Post> = await pool.query(query, values);
-    return result.rows[0] as Post;
+
+    return changeKeys.camelCase(result.rows[0]) as Post;
   }
 }
