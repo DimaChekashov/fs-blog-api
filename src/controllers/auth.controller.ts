@@ -3,7 +3,6 @@ import { validateBody } from "@/middlewares/validate-body.middleware.ts";
 import {
   CreateUserSchema,
   LoginUserSchema,
-  RefreshTokenSchema,
   RefreshTokenPayloadSchema,
 } from "@/models/user.model.ts";
 import type { AuthService } from "@/services/auth.service.ts";

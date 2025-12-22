@@ -4,10 +4,13 @@ import postRouter from "./routes/post.router.ts";
 import { errorHandler } from "./middlewares/error.middleware.ts";
 import authRouter from "./routes/auth.router.ts";
 import commentRouter from "./routes/comment.router.ts";
+import { setupSwagger } from "./config/swagger.ts";
 
 const app = express();
 
 app.use(express.json());
+
+setupSwagger(app);
 
 dotenv.config();
 
